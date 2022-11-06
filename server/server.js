@@ -89,7 +89,7 @@ app.post("/create-checkout-session", async (req, res) => {
   return res.redirect(303, session.url);
 });
 app.post("/create-product-from-nft", async (req, res) => {
-  const { nft_data } = req.body;
+  const { nft_data, price } = req.body;
   var ethPriceInUSD = "";
   coinbaseClient.getBuyPrice({ currencyPair: "ETH-USD" }, (err, data) => {
     if (err) {
@@ -100,7 +100,7 @@ app.post("/create-product-from-nft", async (req, res) => {
   });
 
   //wei to usd
-  const nftPriceInETH = parseFloat(ethers.utils.formatEther(nft_data.token_price_wei));
+  const nftPriceInETH = parseFloat(ethers.utils.formatEther(price);
   const nftPriceInUSD = nftPriceInETH * ethPriceInUSD
 
   const product = await stripe.products.create({

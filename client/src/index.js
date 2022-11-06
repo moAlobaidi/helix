@@ -5,12 +5,12 @@ import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import Checkout from "./components/Checkout";
 import Success from "./components/Success";
 import Canceled from "./components/Canceled";
-
 import "./css/normalize.css";
 import "./css/global.css";
 
 //react query
 import {QueryClient, QueryClientProvider} from "react-query";
+import Home from "./components/Home";
 
 const queryClient = new QueryClient()
 
@@ -25,8 +25,9 @@ function App() {
           <Route path="/canceled.html">
             <Canceled />
           </Route>
+          <Route path="/checkout" component={Checkout} />
           <Route path="/">
-            <Checkout />
+            <Home />
           </Route>
         </Switch>
       </Router>
