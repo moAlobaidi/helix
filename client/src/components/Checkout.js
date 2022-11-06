@@ -38,9 +38,9 @@ const formatNFTPrice = (price_wei) => {
 
 const getNFT = async ({ queryKey }) => {
   const [, params] = queryKey;
-  const { data } = await axios.get(
+  /*const { data } = await axios.get(
     `https://api.covalenthq.com/v1/${chainID}/tokens/${params.tokenAddress}/nft_metadata/${params.tokenID}/?quote-currency=USD&format=JSON&key=${covalentApiKey}`
-  );
+  );*/
 
   //this data struct is in covalent docs
   const config = {
@@ -54,15 +54,15 @@ const getNFT = async ({ queryKey }) => {
     config
   );
   console.log(openSeaListing);
-  const covalent_data = data.data.items[0].nft_data[0];
-  /*  const covalent_data = {
+  //const covalent_data = data.data.items[0].nft_data[0];
+  const covalent_data = {
     external_data: {
       name: "dog",
       image_256:
         "https://i.seadn.io/gae/PZk2vEBxfBtTzweWa09_-lNFSZT9LSnHu6DrlrNU91CbGPf-gARItOb4-nWJVewOMEOnSjg-DZ3tbcnWEcKrf_4PXqwpFiwcpajo3w?auto=format&w=1000",
       description: "ur mom is cool",
     },
-  };*/
+  };
 
   const helix_nft_data = {
     name: covalent_data.external_data.name,
@@ -85,6 +85,7 @@ const Checkout = ({ location }) => {
   const queryParams = new URLSearchParams(location.search);
   const tokenAddress = queryParams.get("tokenAddress");
   const tokenID = queryParams.get("tokenID");
+  const triangleAddress = queryParams.get("tokenID");
   const [amount, setAmount] = useState(0);
   const [currency, setCurrency] = useState("USD");
   const tokenData = useMemo(() => {
@@ -106,8 +107,10 @@ const Checkout = ({ location }) => {
       console.log("could not get price");
       return;
     }
+    const userAddress = address ? address : triangleAddress;
+
     axios
-      .post("/create-product-from-nft", { data, price, address })
+      .post("/create-product-from-nft", { data, price, userAddress })
       .then((res) => {
         console.log(res);
         window.location.href = res.data.url;
