@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import {useHistory} from "react-router-dom";
+import {ConnectButton} from "@rainbow-me/rainbowkit";
 
 const Home = () => {
   const [tokenAddress, setTokenAddress] = useState(
@@ -16,6 +17,7 @@ const Home = () => {
   return (
     <div className="sr-root">
       <div className="sr-main">
+        <ConnectButton />
         <section className="container">
           <div>
             <h1>Input your NFT</h1>

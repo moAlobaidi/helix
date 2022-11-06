@@ -89,7 +89,7 @@ app.post("/create-checkout-session", async (req, res) => {
   return res.redirect(303, session.url);
 });
 app.post("/create-product-from-nft", async (req, res) => {
-  /*const { nft_data, price } = req.body;
+  const { nft_data, price } = req.body;
   var ethPriceInUSD = "";
   coinbaseClient.getBuyPrice({ currencyPair: "ETH-USD" }, (err, data) => {
     if (err) {
@@ -112,7 +112,7 @@ app.post("/create-product-from-nft", async (req, res) => {
     },
     description: nft_data.external_data.description,
     metadata: nft_data,
-  });*/
+  });
 });
 
 // Webhook handler for asynchronous events.

@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { useQuery } from "react-query";
-import { Alchemy } from "alchemy-sdk";
-import { useSearchParams } from "react-router-dom";
+import { ethers } from "ethers";
 
 const formatPrice = ({ amount, currency, quantity }) => {
   const numberFormat = new Intl.NumberFormat("en-US", {
@@ -10,20 +9,27 @@ const formatPrice = ({ amount, currency, quantity }) => {
     currency,
     currencyDisplay: "symbol",
   });
-  const parts = numberFormat.formatToParts(amount);
-  let zeroDecimalCurrency = true;
-  for (let part of parts) {
-    if (part.type === "decimal") {
-      zeroDecimalCurrency = false;
-    }
-  }
-  amount = zeroDecimalCurrency ? amount : amount / 100;
-  const total = (quantity * amount).toFixed(2);
+  const data = fetchETHPrice().catch((err) => {
+    console.log(err);
+    return;
+  });
+  const ethPriceInUSD = parseFloat(data.amount);
+  const nftPriceInETH = parseFloat(ethers.utils.formatEther(amount));
+  const nftPriceInUSD = nftPriceInETH * ethPriceInUSD;
+
+  const total = nftPriceInUSD.toFixed(2);
   return numberFormat.format(total);
 };
 
 const covalentApiKey = "ckey_ebb5aebf4ec54c8198835c01d60";
 const chainID = 1;
+
+const fetchETHPrice = async () => {
+  const { data } = await axios.get(
+    `https://api.coinbase.com/v2/prices/ETH-USD/buy`
+  );
+  return data;
+};
 
 const getNFT = async ({ queryKey }) => {
   const [, params] = queryKey;
@@ -46,7 +52,7 @@ const getNFT = async ({ queryKey }) => {
   const helix_nft_data = {
     external_data: nft_data.external_data,
     openseaData: openSeaListing,
-    price: openSeaListing.orders[0].current_price
+    price: openSeaListing.orders[0].current_price,
   };
 
   return helix_nft_data;
@@ -60,11 +66,10 @@ const Checkout = ({ location }) => {
   const [quantity, setQuantity] = useState(1);
   const [amount, setAmount] = useState(0);
   const [currency, setCurrency] = useState("USD");
-
-  const { data, isSuccess } = useQuery(
-    ["NFT", { tokenAddress: tokenAddress, tokenID: tokenID }],
-    getNFT
-  );
+  const tokenData = useMemo(() => {
+    return { tokenAddress: tokenAddress, tokenID: tokenID };
+  }, []);
+  const { data, isSuccess } = useQuery(["NFT", tokenData], getNFT);
 
   console.log(data);
   const createProductFromNFT = async (data) => {
@@ -140,7 +145,7 @@ const Checkout = ({ location }) => {
             {/*  onChange={(e) => setTokenAddress(e.target.value)}*/}
             {/*/>*/}
             <button role="link" onClick={handleBuyNow}>
-              Buy {formatPrice({ amount, currency, quantity })}
+              Buy {formatPrice({ amount: data.price, currency, quantity })}
             </button>
           </section>
         </div>
