@@ -5,6 +5,7 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Checkout from "./components/Checkout";
 import Success from "./components/Success";
 import Canceled from "./components/Canceled";
+import Navbar from "./components/Navbar";
 import "./css/normalize.css";
 import "./css/global.css";
 import "@rainbow-me/rainbowkit/styles.css";
@@ -39,6 +40,7 @@ function App() {
     <WagmiConfig client={wagmiClient}>
       <RainbowKitProvider chains={chains}>
         <QueryClientProvider client={queryClient}>
+          <Navbar/>
           <Router>
             <Switch>
               <Route path="/success.html">
