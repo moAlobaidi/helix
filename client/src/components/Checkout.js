@@ -31,19 +31,26 @@ const getNFT = async ({ queryKey }) => {
     `https://api.covalenthq.com/v1/${chainID}/tokens/${params.tokenAddress}/nft_metadata/${params.tokenID}/?quote-currency=USD&format=JSON&key=${covalentApiKey}`
   );
   //this data struct is in covalent docs
+  const config = {
+    headers: {
+      Accept: "application/json",
+      "X-API-KEY": "99ca8aaff8e1469eaa73a57dbcbb00c0",
+    },
+  };
   const { data: openSeaListing } = await axios.get(
-      `https://api.opensea.io/v2/orders/ethereum/seaport/listings?asset_contract_address=${params.tokenAddress}&token_ids=${params.tokenID}&order_by=created_date&order_direction=desc`
+    `https://api.opensea.io/v2/orders/ethereum/seaport/listings?asset_contract_address=${params.tokenAddress}&token_ids=${params.tokenID}&order_by=created_date&order_direction=desc`,
+    config
   );
 
- const nft_data = data.data.items[0].nft_data[0]
-
+  const nft_data = data.data.items[0].nft_data[0];
   const helix_nft_data = {
-   external_data: nft_data.external_data,
+    external_data: nft_data.external_data,
     openseaData: openSeaListing,
-  }
+    price: openSeaListing.orders[0].current_price
+  };
+
   return helix_nft_data;
 };
-
 
 const Checkout = ({ location }) => {
   const queryParams = new URLSearchParams(location.search);
