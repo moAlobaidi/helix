@@ -3,11 +3,23 @@ import { useHistory } from "react-router-dom";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 const Home = () => {
-  const [tokenAddress, setTokenAddress] = useState("");
-  const [tokenID, setTokenID] = useState("");
+  const [tokenURL, setTokenURL] = useState("");
+
   const history = useHistory();
+  const getAddressAndIdFromURL = (url) => {
+    //https://testnets.opensea.io/assets/goerli/0x3a1e7aba44bf21a66344d7a0f795a7df0b49ed60/30536
+    const partsArray = url.split("/");
+    const tokenAddress = partsArray[5];
+    const tokenID = partsArray[6];
+    return { tokenAddress: tokenAddress, tokenID: tokenID };
+  };
+
+  getAddressAndIdFromURL(
+    "https://testnets.opensea.io/assets/goerli/0x3a1e7aba44bf21a66344d7a0f795a7df0b49ed60/30536"
+  );
 
   function handleSubmit() {
+    const { tokenAddress, tokenID } = getAddressAndIdFromURL(tokenURL);
     history.push(
       "/checkout?tokenID=" +
         encodeURIComponent(tokenID) +
@@ -55,17 +67,10 @@ const Home = () => {
             </div>
             <input
               type="text"
-              placeholder={"token address"}
-              value={tokenAddress}
-              onChange={(e) => setTokenAddress(e.target.value)}
+              placeholder={"OpenSea link"}
+              value={tokenURL}
+              onChange={(e) => setTokenURL(e.target.value)}
               style={{ marginTop: 7 }}
-            />
-            <input
-              type="text"
-              placeholder={"token id"}
-              value={tokenID}
-              onChange={(e) => setTokenID(e.target.value)}
-              style={{ marginTop: 10 }}
             />
             <button
               role="link"

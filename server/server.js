@@ -78,7 +78,7 @@ app.get("/checkout-session", async (req, res) => {
     accountAddress: POOL_WALLET_ADDRESS,
   });
 
-  const transferTX = await openseaSDK.transfer({
+/*  const transferTX = await openseaSDK.transfer({
     asset: {
       tokenId: session.metadata.tokenID,
       tokenAddress: session.metadata.tokenAddress,
@@ -86,7 +86,7 @@ app.get("/checkout-session", async (req, res) => {
     fromAddress: POOL_WALLET_ADDRESS,
     toAddress: session.metadata.userAddress,
   });
-  console.log(`success ${transferTX}`);
+  console.log(`success ${transferTX}`);*/
 
   res.send(session);
 });

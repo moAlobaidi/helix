@@ -1,8 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { useQuery } from "react-query";
-import { BigNumber, ethers, utils } from "ethers";
-import { useAccount, useConnect } from "wagmi";
+import { ethers } from "ethers";
+import { useAccount } from "wagmi";
 
 const covalentApiKey = "ckey_ebb5aebf4ec54c8198835c01d60";
 const chainID = 5;
@@ -38,9 +38,9 @@ const formatNFTPrice = (price_wei) => {
 
 const getNFT = async ({ queryKey }) => {
   const [, params] = queryKey;
-  /* const { data } = await axios.get(
+  const { data } = await axios.get(
     `https://api.covalenthq.com/v1/${chainID}/tokens/${params.tokenAddress}/nft_metadata/${params.tokenID}/?quote-currency=USD&format=JSON&key=${covalentApiKey}`
-  );*/
+  );
 
   //this data struct is in covalent docs
   const config = {
@@ -53,19 +53,20 @@ const getNFT = async ({ queryKey }) => {
     `https://testnets-api.opensea.io/v2/orders/goerli/seaport/listings?asset_contract_address=${params.tokenAddress}&token_ids=${params.tokenID}&order_by=created_date&order_direction=desc`,
     config
   );
-
-  // const covalent_data = data.data.items[0].nft_data[0];
-  const covalent_data = {
+  console.log(openSeaListing);
+  const covalent_data = data.data.items[0].nft_data[0];
+  /*  const covalent_data = {
     external_data: {
       name: "dog",
       image_256:
         "https://i.seadn.io/gae/PZk2vEBxfBtTzweWa09_-lNFSZT9LSnHu6DrlrNU91CbGPf-gARItOb4-nWJVewOMEOnSjg-DZ3tbcnWEcKrf_4PXqwpFiwcpajo3w?auto=format&w=1000",
       description: "ur mom is cool",
     },
-  };
+  };*/
+
   const helix_nft_data = {
     name: covalent_data.external_data.name,
-    image_256: covalent_data.external_data.image_256,
+    image_256: covalent_data.external_data.image,
     description: covalent_data.external_data.description,
     price_wei: openSeaListing.orders[0].current_price,
     tokenAddress: params.tokenAddress,
@@ -75,6 +76,11 @@ const getNFT = async ({ queryKey }) => {
   return helix_nft_data;
 };
 
+const getAddressAndIdFromURL = (url) => {
+  //https://testnets.opensea.io/assets/goerli/0x3a1e7aba44bf21a66344d7a0f795a7df0b49ed60/30536
+  const partsArray = url.split("/");
+  console.log(partsArray);
+};
 const Checkout = ({ location }) => {
   const queryParams = new URLSearchParams(location.search);
   const tokenAddress = queryParams.get("tokenAddress");
@@ -89,6 +95,9 @@ const Checkout = ({ location }) => {
     getNFT
   );
   console.log(`data.price_wei: ${data?.price_wei}`);
+  getAddressAndIdFromURL(
+    "https://testnets.opensea.io/assets/goerli/0x3a1e7aba44bf21a66344d7a0f795a7df0b49ed60/30536"
+  );
   const { address } = useAccount();
 
   const handleBuyNow = async () => {
