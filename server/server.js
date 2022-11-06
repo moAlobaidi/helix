@@ -17,12 +17,21 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY, {
     url: "https://github.com/stripe-samples/checkout-one-time-payments",
   },
 });
+const axios = require("axios");
+const HDWalletProvider = require("@truffle/hdwallet-provider");
+const { OpenSeaSDK, Network } = require("opensea-js");
 
-const CoinbaseClient = require("coinbase").Client;
-const coinbaseClient = new CoinbaseClient({
-  apiKey: "API KEY",
-  apiSecret: "API SECRET",
+const provider = new HDWalletProvider(
+  "135fa61e2e0aab82210d18bb8d2c23d4871efd078b0e725bfad560d2e14f7ac8",
+  "https://eth-goerli.g.alchemy.com/v2/ZvpUdy99Sg-5s6Jx5bcJyAswfxOJjEdH"
+);
+
+const openseaSDK = new OpenSeaSDK(provider, {
+  networkName: Network.Goerli,
+  apiKey: "",
 });
+
+const POOL_WALLET_ADDRESS = "0x9D0f35B74902759019DbB88E523550724f3d7FDf";
 
 app.use(express.static(process.env.STATIC_DIR));
 app.use(express.urlencoded());
@@ -57,14 +66,57 @@ app.get("/config", async (req, res) => {
 app.get("/checkout-session", async (req, res) => {
   const { sessionId } = req.query;
   const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+  const order = await openseaSDK.api.getOrder({
+    assetContractAddress: session.metadata.tokenAddress,
+    tokenId: session.metadata.tokenID,
+    side: "ask",
+  });
+
+  const transactionHash = await openseaSDK.fulfillOrder({
+    order,
+    accountAddress: POOL_WALLET_ADDRESS,
+  });
+
+  const transferTX = await openseaSDK.transfer({
+    asset: {
+      tokenId: session.metadata.tokenID,
+      tokenAddress: session.metadata.tokenAddress,
+    },
+    fromAddress: POOL_WALLET_ADDRESS,
+    toAddress: session.metadata.userAddress,
+  });
+  console.log(`success ${transferTX}`);
+
   res.send(session);
 });
 
-app.post("/create-checkout-session", async (req, res) => {
+app.post("/create-product-from-nft", async (req, res) => {
   const domainURL = process.env.DOMAIN;
+  console.log(req.body);
+  const { data, price, address } = req.body;
 
-  const { price, quantity } = req.body;
+  const product = await stripe.products.create({
+    name: data.name,
+    default_price_data: {
+      currency: "USD",
+      //this can include gas price + platfrom fee for now
+      unit_amount_decimal: Math.trunc(price),
+    },
+    description: data.description,
+    metadata: {
+      tokenAddress: data.tokenAddress,
+      tokenID: data.tokenID,
+      userAddress: address,
+    },
+  });
 
+  if (!product) {
+    console.log("could not create product");
+  }
+
+  console.log(product.default_price);
+  const price_id = product.default_price;
   // Create new Checkout Session for the order
   // Other optional params include:
   // [billing_address_collection] - to display billing address details on the page
@@ -72,12 +124,13 @@ app.post("/create-checkout-session", async (req, res) => {
   // [customer_email] - lets you prefill the email input in the Checkout page
   // [automatic_tax] - to automatically calculate sales tax, VAT and GST in the checkout page
   // For full details see https://stripe.com/docs/api/checkout/sessions/create
+
   const session = await stripe.checkout.sessions.create({
     mode: "payment",
     line_items: [
       {
-        price: price,
-        quantity: quantity,
+        price: price_id,
+        quantity: 1,
       },
     ],
     // ?session_id={CHECKOUT_SESSION_ID} means the redirect will have the session ID set as a query param
@@ -86,33 +139,9 @@ app.post("/create-checkout-session", async (req, res) => {
     // automatic_tax: {enabled: true},
   });
 
-  return res.redirect(303, session.url);
-});
-app.post("/create-product-from-nft", async (req, res) => {
-  const { nft_data, price } = req.body;
-  var ethPriceInUSD = "";
-  coinbaseClient.getBuyPrice({ currencyPair: "ETH-USD" }, (err, data) => {
-    if (err) {
-      console.log(err);
-      return;
-    }
-    ethPriceInUSD = parseFloat(data.amount);
-  });
+  console.log(session.url);
 
-  //wei to usd
-  const nftPriceInETH = parseFloat(ethers.utils.formatEther(10000));
-  const nftPriceInUSD = nftPriceInETH * ethPriceInUSD
-
-  const product = await stripe.products.create({
-    name: nft_data.external_data.name,
-    default_price_data: {
-      currency: "USD",
-      //this can include gas price + platfrom fee for now
-      unit_amount_decimal: nftPriceInUSD,
-    },
-    description: nft_data.external_data.description,
-    metadata: nft_data,
-  });
+  return res.json({ url: session.url });
 });
 
 // Webhook handler for asynchronous events.

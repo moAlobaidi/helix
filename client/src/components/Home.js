@@ -4,9 +4,9 @@ import {ConnectButton} from "@rainbow-me/rainbowkit";
 
 const Home = () => {
   const [tokenAddress, setTokenAddress] = useState(
-    "0x99a9b7c1116f9ceeb1652de04d5969cce509b069"
+    ""
   );
-  const [tokenID, setTokenID] = useState("381000225");
+  const [tokenID, setTokenID] = useState("");
   const history = useHistory();
 
   function handleSubmit() {
@@ -24,11 +24,13 @@ const Home = () => {
           </div>
           <input
             type="text"
+            placeholder={"token address"}
             value={tokenAddress}
             onChange={(e) => setTokenAddress(e.target.value)}
           />
           <input
             type="text"
+            placeholder={"token id"}
             value={tokenID}
             onChange={(e) => setTokenID(e.target.value)}
           />
