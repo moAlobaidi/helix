@@ -15,11 +15,11 @@ const Home = () => {
   }
 
   return (
-    <div className="sr-root" style={{backgroundColor: 'midnightblue'}}>
+    <div style={{backgroundColor: 'midnightblue', width: "100vw", height: "100vh", display: "flex", flexDirection: 'column', justifyContent: "center"}}>
       <div className="sr-main">
         <div className="button thingy"> 
-        <div style={{display: 'flex', justifyContent: 'center', width: '93%'}}>
-          <ConnectButton /> 
+          <div style={{display: 'flex', justifyContent: 'center', width: '93%', marginTop: "80px"}}>
+            <ConnectButton style={{}}/> 
           </div>
           <section className="container" style={{backgroundColor: 'white', marginTop: 30, boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)'}}>
             <div style={{backgroundColor: 'white'}}>
