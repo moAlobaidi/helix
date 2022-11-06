@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useQuery } from "react-query";
+import {Alchemy} from "alchemy-sdk";
 
 const formatPrice = ({ amount, currency, quantity }) => {
   const numberFormat = new Intl.NumberFormat("en-US", {
@@ -41,20 +42,59 @@ const getNFT = async ({ queryKey }) => {
   const { data } = await axios.get(
     `https://api.covalenthq.com/v1/${chainID}/tokens/${params.tokenAddress}/nft_metadata/${params.tokenID}/?quote-currency=USD&format=JSON&key=${covalentApiKey}`
   );
+  //this data struct is in covalent docs
   return data.data.items[0].nft_data[0];
 };
 
+const alchemy = new Alchemy()
+
 const Checkout = () => {
   const [quantity, setQuantity] = useState(1);
+  const [tokenAddress, setTokenAddress] = useState(
+    "0x99a9b7c1116f9ceeb1652de04d5969cce509b069"
+  );
+  const [tokenId, setTokenId] = useState("381000225");
   const [amount, setAmount] = useState(0);
   const [currency, setCurrency] = useState("USD");
-  const tokenAddress = "0x99a9b7c1116f9ceeb1652de04d5969cce509b069";
-  const tokenId = "381000225";
 
   const { data, isSuccess } = useQuery(
     ["NFT", { tokenAddress: tokenAddress, tokenID: tokenId }],
     getNFT
   );
+console.log(data)
+  const createProductFromNFT = async (data) => {
+    axios
+      .post("/create-product-from-nft", {
+        data,
+      })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
+  const fetchNFTPrice = async (tokenAddress) => {
+    alchemy.nft
+        .getFloorPrice(tokenAddress)
+        .then(console.log);
+  };
+
+  const handleBuyNow = async (price, quantity) => {
+    axios
+      .post("/create-checkout-session", {
+        price,
+        quantity,
+      })
+      .then((res) => {
+        console.log(res);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+fetchNFTPrice(tokenAddress)
 
   useEffect(() => {
     async function fetchConfig() {
@@ -66,9 +106,11 @@ const Checkout = () => {
       setCurrency(currency);
     }
     fetchConfig();
+    createProductFromNFT(data).catch((err) => {
+      console.log(err);
+    });
   }, []);
 
-  console.log(data);
   /*
    * https://opensea.io/assets/ethereum/0x99a9b7c1116f9ceeb1652de04d5969cce509b069/381000255
    * */
@@ -89,20 +131,19 @@ const Checkout = () => {
                 />
               </div>
             </div>
-            <form action="/create-checkout-session" method="POST">
-              <input
-                  type="number"
-                  id="quantity-input"
-                  min="1"
-                  max="10"
-                  value={quantity}
-                  name="quantity"
-                  readOnly
-              />
-              <button role="link" id="submit" type="submit">
-                Buy {formatPrice({ amount, currency, quantity })}
-              </button>
-            </form>
+            <input
+              type="text"
+              value={tokenAddress}
+              onChange={(e) => setTokenAddress(e.target.value)}
+            />
+            <input
+              type="text"
+              value={tokenId}
+              onChange={(e) => setTokenAddress(e.target.value)}
+            />
+            <button role="link" onClick={handleBuyNow}>
+              Buy {formatPrice({ amount, currency, quantity })}
+            </button>
           </section>
         </div>
       </div>
