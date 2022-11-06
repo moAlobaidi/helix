@@ -7,7 +7,7 @@ const Navbar = () => {
     return (
         <div style={{display: "flex", flexDirection: 'row', width: '100%', display: 'flex', justifyContent: 'space-between'}}>
             <div>
-                    <img src={Logo} alt="React Logo" style={{width: '15%'}}/>
+                    <img src={Logo} alt="React Logo" style={{width: '10%', marginTop: '2%'}}/>
                 </div>
             <a href="https://rigorous-parsnip-bbe.notion.site/Learn-a5f878b12c624bfa95933fe4546b6635">
     

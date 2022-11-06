@@ -120,7 +120,7 @@ const Checkout = ({ location }) => {
 
   return (
     isSuccess && (
-      <div className="sr-root" style={{backgroundColor: 'midnightblue'}}>
+      <div style={{backgroundColor: 'midnightblue', width: "100vw", height: "100vh", display: "flex", flexDirection: 'column', justifyContent: "center"}}>
         <div className="sr-main">
           <section className="container" style={{backgroundColor: 'white'}}>
             <div>
