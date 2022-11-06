@@ -120,11 +120,11 @@ const Checkout = ({ location }) => {
 
   return (
     isSuccess && (
-      <div className="sr-root">
+      <div className="sr-root" style={{backgroundColor: 'midnightblue'}}>
         <div className="sr-main">
-          <section className="container">
+          <section className="container" style={{backgroundColor: 'white'}}>
             <div>
-              <h1>{data.external_data.name}</h1>
+              <h1 style={{color: 'midnightblue', textAlign:'center'}}>{data.external_data.name}</h1>
               <div className="pasha-image">
                 <img
                   alt="Random asset from Picsum"
@@ -144,7 +144,7 @@ const Checkout = ({ location }) => {
             {/*  value={tokenID}*/}
             {/*  onChange={(e) => setTokenAddress(e.target.value)}*/}
             {/*/>*/}
-            <button role="link" onClick={handleBuyNow}>
+            <button role="link" onClick={handleBuyNow} style={{backgroundColor: 'midnightblue', color: 'white'}}>
               Buy {formatPrice({ amount: data.price, currency, quantity })}
             </button>
           </section>

@@ -15,27 +15,31 @@ const Home = () => {
   }
 
   return (
-    <div className="sr-root">
+    <div className="sr-root" style={{backgroundColor: 'midnightblue'}}>
       <div className="sr-main">
-        <ConnectButton />
-        <section className="container">
-          <div>
-            <h1>Input your NFT</h1>
+        <div className="button thingy"> 
+        <div style={{display: 'flex', justifyContent: 'center', width: '93%'}}>
+          <ConnectButton /> 
           </div>
-          <input
-            type="text"
-            value={tokenAddress}
-            onChange={(e) => setTokenAddress(e.target.value)}
-          />
-          <input
-            type="text"
-            value={tokenID}
-            onChange={(e) => setTokenID(e.target.value)}
-          />
-          <button role="link" onClick={handleSubmit}>
-            Submit
-          </button>
-        </section>
+          <section className="container" style={{backgroundColor: 'white', marginTop: 30, boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)'}}>
+            <div style={{backgroundColor: 'white'}}>
+              <h1 style={{color: 'midnightblue', textAlign:'center'}}>Input your NFT</h1>
+            </div>
+            <input
+              type="text"
+              value={tokenAddress}
+              onChange={(e) => setTokenAddress(e.target.value)}
+            style={{ marginTop: 7}}/>
+            <input
+              type="text"
+              value={tokenID}
+              onChange={(e) => setTokenID(e.target.value)}
+              style={{ marginTop: 10}}/>
+            <button role="link" onClick={handleSubmit} style={{backgroundColor: 'midnightblue', color: 'white'}}>
+              Submit
+            </button>
+          </section>
+        </div>
       </div>
     </div>
   );
