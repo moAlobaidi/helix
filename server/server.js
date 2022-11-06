@@ -23,7 +23,7 @@ const { OpenSeaSDK, Network } = require("opensea-js");
 
 const provider = new HDWalletProvider(
   "135fa61e2e0aab82210d18bb8d2c23d4871efd078b0e725bfad560d2e14f7ac8",
-  "https://eth-goerli.g.alchemy.com/v2/ZvpUdy99Sg-5s6Jx5bcJyAswfxOJjEdH"
+  "https://eth-goerli.g.alchemy.com/v2/TAsk_0R_U83ZyLjhoVE96glAdqtrBwXP"
 );
 
 const openseaSDK = new OpenSeaSDK(provider, {
@@ -75,10 +75,11 @@ app.get("/checkout-session", async (req, res) => {
 
   const transactionHash = await openseaSDK.fulfillOrder({
     order,
-    accountAddress: POOL_WALLET_ADDRESS,
+    accountAddress: "0x9D0f35B74902759019DbB88E523550724f3d7FDf",
   });
-
-/*  const transferTX = await openseaSDK.transfer({
+  console.log(`fulfilled order ${transactionHash}`)
+  res.send(session);
+  /*  const transferTX = await openseaSDK.transfer({
     asset: {
       tokenId: session.metadata.tokenID,
       tokenAddress: session.metadata.tokenAddress,
@@ -87,8 +88,6 @@ app.get("/checkout-session", async (req, res) => {
     toAddress: session.metadata.userAddress,
   });
   console.log(`success ${transferTX}`);*/
-
-  res.send(session);
 });
 
 app.post("/create-product-from-nft", async (req, res) => {

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import * as url from "url";
 
 const Home = () => {
   const [tokenURL, setTokenURL] = useState("");
@@ -13,10 +14,6 @@ const Home = () => {
     const tokenID = partsArray[6];
     return { tokenAddress: tokenAddress, tokenID: tokenID };
   };
-
-  getAddressAndIdFromURL(
-    "https://testnets.opensea.io/assets/goerli/0x3a1e7aba44bf21a66344d7a0f795a7df0b49ed60/30536"
-  );
 
   function handleSubmit() {
     const { tokenAddress, tokenID } = getAddressAndIdFromURL(tokenURL);
