@@ -132,24 +132,41 @@ const Checkout = ({ location }) => {
   }
   if (isSuccess) {
     return (
-      <div className="sr-root">
-        <div className="sr-main">
-          <section className="container">
-            <div>
-              <h1>{data.name}</h1>
-              <div className="pasha-image">
-                <img
-                  alt="Random asset from Picsum"
-                  src={data.image_256}
-                  width="140"
-                  height="160"
-                />
+      <div
+        style={{
+          backgroundColor: "midnightblue",
+          width: "100vw",
+          height: "100vh",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+        }}
+      >
+        <div className="sr-root">
+          <div className="sr-main">
+            <section className="container" style={{ backgroundColor: "white" }}>
+              <div>
+                <h1 style={{ color: "midnightblue", textAlign: "center" }}>
+                  {data.name}
+                </h1>
+                <div className="pasha-image">
+                  <img
+                    alt="Random asset from Picsum"
+                    src={data.image_256}
+                    width="140"
+                    height="160"
+                  />
+                </div>
               </div>
-            </div>
-            <button role="link" onClick={handleBuyNow}>
-              Buy {parseFloat(ethers.utils.formatEther(data.price_wei))}
-            </button>
-          </section>
+              <button
+                role="link"
+                onClick={handleBuyNow}
+                style={{ backgroundColor: "midnightblue", color: "white" }}
+              >
+                Buy {parseFloat(ethers.utils.formatEther(data.price_wei))}
+              </button>
+            </section>
+          </div>
         </div>
       </div>
     );
